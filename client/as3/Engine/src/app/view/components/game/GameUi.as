@@ -237,11 +237,7 @@ package app.view.components.game
 				}
 					
 				(playerField.getChildByName("s" + deck + "_" + i) as MovieClip).visible = false;	
-				/*if(shipOrient == 0){
-					*/if(showTable) (_drownedShip.getChildByName("table") as MovieClip).gotoAndStop(shipOrient+1);
-				/*}else{
-					if(showTable) (_drownedShip.getChildByName("table") as MovieClip).gotoAndStop(1);
-				}*/				
+				if(showTable) (_drownedShip.getChildByName("table") as MovieClip).gotoAndStop(shipOrient+1);						
 			}
 			
 			container.addChild(selectedCell);
@@ -297,9 +293,8 @@ package app.view.components.game
 			for (var j:int = 0; j < oponentField.numChildren; j++) 
 			{
 				var _elt:MovieClip = oponentField.getChildAt(j) as MovieClip;			
-				if(_elt && (_elt.name == "cell" || _elt.name == "drowned")){
-					elToRemoveO.push(_elt);					
-				}
+				
+				if(_elt && (_elt.name == "cell" || _elt.name == "drowned"))		elToRemoveO.push(_elt);						
 			}	
 			
 			removeEl(elToRemoveO, oponentField);

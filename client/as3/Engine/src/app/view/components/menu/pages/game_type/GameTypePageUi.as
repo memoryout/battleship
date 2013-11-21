@@ -23,23 +23,8 @@ package app.view.components.menu.pages.game_type
 		private var computerPullButton:		SimpleButton;
 		
 		private var activeGameView:			MovieClip;
-		private var _gameList:				MovieClip;
-		private var gameListMask:			MovieClip;
-		
+				
 		private var _hInit:					DisplayObject;
-		
-		private var gameContainer:			Sprite;		
-		private var arrayOfActiveGame:		Array = new Array();
-		private var currentElementCounter:	int;
-		
-		private var yOffset:				Number = 0;		
-		
-		private var _tween:					TweenLite;
-		
-		private var deltaY:					Number = 0;
-		
-		private var selectedElement:		MovieClip;
-		private var selectedForRemoveElement:MovieClip;
 				
 		public function GameTypePageUi()
 		{

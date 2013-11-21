@@ -14,7 +14,7 @@ package app.view.components.game
 	import flash.geom.Point;
 	import flash.utils.Timer;
 
-	public class ShipLocation extends Sprite
+	public class ShipLocationUi extends Sprite
 	{
 		private var _model:					mShipLocation;
 		private var _gameData:				FullGameData;
@@ -46,7 +46,7 @@ package app.view.components.game
 		private var canLocate:				Boolean;	
 		private var tableIsAdd:				Boolean;	
 		
-		public function ShipLocation(med:mShipLocation = null)
+		public function ShipLocationUi(med:mShipLocation = null)
 		{
 			TweenPlugin.activate([TintPlugin]);
 			

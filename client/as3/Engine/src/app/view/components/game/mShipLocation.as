@@ -13,7 +13,7 @@ package app.view.components.game
 	{
 		private static const NAME:		String = "app.view.components.game.mShipLocation";
 		private var _rootSprite:		Sprite;
-		private var _shipLocation:		ShipLocation;	
+		private var _shipLocation:		ShipLocationUi;	
 		
 		public function mShipLocation(viewComponent:Object=null)
 		{
@@ -25,7 +25,7 @@ package app.view.components.game
 		{
 			if(!_shipLocation)
 			{	
-				_shipLocation = new ShipLocation(this);
+				_shipLocation = new ShipLocationUi(this);
 				_rootSprite.addChild(_shipLocation);
 			}		
 		}
