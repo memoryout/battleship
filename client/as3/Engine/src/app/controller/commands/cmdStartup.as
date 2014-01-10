@@ -2,7 +2,7 @@ package app.controller.commands
 {
 	import app.controller.logic.AppLogic;
 	import app.model.config.pGameConfig;
-	import app.model.game.pShipsArray;
+	import app.model.game.PShipsArray;
 	import app.model.profiles.pUserProfileManager;
 	import app.model.save.pSavedGame;
 	import app.model.server.ServerParser;
@@ -23,7 +23,7 @@ package app.controller.commands
 			var root:Stage = (note.getBody() as Stage);		
 			                     
 //			facade.registerProxy( new pComputer() );            
-			facade.registerProxy( new pShipsArray() );     
+			facade.registerProxy( new PShipsArray() );     
 			//facade.registerProxy( new pShipsArrayCom() );     
 			facade.registerProxy( new pServer() );   
 			facade.registerProxy( new pSavedGame() );         

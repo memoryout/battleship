@@ -158,7 +158,7 @@ package app.model.save
 				_ship.deck			= val[i].deck;
 				_ship.drowned		= val[i].drowned;
 				_ship.line			= val[i].line;
-				_ship.orient		= val[i].orient;
+				_ship.direction		= val[i].orient;
 					
 				_ships.push(_ship);
 			}		

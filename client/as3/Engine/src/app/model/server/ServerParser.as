@@ -75,7 +75,7 @@ package app.model.server
 			
 			for (var i:int = 0; i < _ships.length; i++) 
 			{
-				var ship:Ship = new Ship(), orient:int, coordinates:Array =  new Array();
+				var ship:Ship = new Ship(), orient:int, coordinates:Vector.<Array> =  new Vector.<int>;
 				
 				ship.column = _ships[i].coordinates[0][1];
 				ship.line 	= _ships[i].coordinates[0][0];				
@@ -107,7 +107,7 @@ package app.model.server
 				}					
 				
 				ship.coordinates = coordinates;
-				ship.orient = orient;		
+				ship.direction = orient;		
 				
 				allShipsLocation.push(ship);
 			}	

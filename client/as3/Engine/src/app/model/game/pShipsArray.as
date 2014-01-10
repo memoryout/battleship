@@ -2,24 +2,49 @@ package app.model.game
 {
 	import org.puremvc.patterns.proxy.Proxy;
 
-	public class pShipsArray extends Proxy
+	public class PShipsArray extends Proxy
 	{
-		public static const NAME:			String = "pShipsArray";
+		public static const NAME:						String = "pShipsArray";
 			
-		private var battleField:	Vector.<Vector.<int>>;
-		private var Ships:			Vector.<Ship>;		
-		private var shipPosition:	Array;
+		private var battleField:						Vector.<Vector.<int>>;
+		private var Ships:								Vector.<Ship>;		
+		private var shipPosition:						Vector.<Array>;
 		
-		private var oneDeckShip		:int = 4;
-		private var twoDeckShip		:int = 3;
-		private var threeDeckShip	:int = 2;
-		private var forDeckShip		:int = 1;		
+		static private const MAXIMUM_CELL_VALUES:		int = 9;
+		static private const FIELD_LENGHT:				int = 10;
 		
-		public function pShipsArray(proxyName:String = null, data:Object=null)
+		static private const EMPTY_CELL_INDEX:			int = 0;
+		static private const WATER_CELL_INDEX:			int = 9;
+		
+		static private const HORIZONTAL_DIRECTION:		int = 1;
+		static private const VERTICAL_DIRECTION:		int = 0;
+		
+		static private const ONE_DECK_INDEX:			int = 1;
+		static private const TWO_DECK_INDEX:			int = 2;
+		static private const THREE_DECK_INDEX:			int = 3;
+		static private const FOUR_DECK_INDEX:			int = 4;
+			
+		static private const ONE_DECK_SHIP_NUMBER:		int = 4;
+		static private const TWO_DECK_SHIP_NUMBER:		int = 3;
+		static private const THREE_DECK_SHIP_NUMBER:	int = 2;
+		static private const FOUR_DECK_SHIP_NUMBER:		int = 1;
+		
+		private var oneDeckShip:						int;
+		private var twoDeckShip:						int;
+		private var threeDeckShip:						int;
+		private var fourDeckShip:						int;		
+		
+		/**
+		 * The class is responsible for generating the playing field and the locattion of ships on it. 
+		 */		
+		public function PShipsArray(proxyName:String = null, data:Object=null)
 		{
 			super(NAME, data);				
 		}	
 		
+		/**
+		 *  Returning vector of Ships.
+		 */	
 		public function getShipsPosition():Vector.<Vector.<Ship>>
 		{		
 			initVariables();
@@ -30,296 +55,293 @@ package app.model.game
 			return res;
 		}
 		
+		/**
+		 *  Returning <b>battleField</b>.
+		 */	
 		public function getBattleField():Vector.<Vector.<int>>
-		{	
-			var res:Vector.<Vector.<int>> = new Vector.<Vector.<int>>;				
-			res = battleField;			
-			return res;
+		{			
+			return battleField;
 		}		
 		
+		/** 
+		 * Initialization of main variables.
+		 */		
 		private function initVariables():void
 		{
-			oneDeckShip 	= 4;
-			twoDeckShip 	= 3;
-			threeDeckShip 	= 2;
-			forDeckShip		= 1;
+			oneDeckShip 	= ONE_DECK_SHIP_NUMBER;
+			twoDeckShip 	= TWO_DECK_SHIP_NUMBER;
+			threeDeckShip 	= THREE_DECK_SHIP_NUMBER;
+			fourDeckShip	= FOUR_DECK_SHIP_NUMBER;
 			
 			battleField		= new Vector.<Vector.<int>>;
 			Ships 			= new Vector.<Ship>;	
-			shipPosition	= new Array();			
+			shipPosition	= new Vector.<int>;
 		
-			for (var i2:int = 0; i2 < 10; i2++) 
+			for (var n:int = 0; n < FIELD_LENGHT; n++) 
 			{
-				battleField[i2] = new Vector.<int>(10, false);
+				battleField[n] = new Vector.<int>(FIELD_LENGHT, false);
 			}					
 		}
 		
+		/**
+		 * Filling ships with the necessary parameters of the battlefield. 
+		 */		
 		private function fillBattleField():void
-		{
-			var column:	int, line:int, orient:int;	
-			
-			while(forDeckShip > 0)
-			{
-				column = createRandomNumber(10);
-				line   = createRandomNumber(10);
-				orient = createRandomNumber(2);		
-				
-				if(	checkBattleField( column, line, orient, 4) )
-				{					
-					putShipInBattleField(column, line, orient, 4);					
-					saveDataAboutShipLocation(orient, 4);					
-					forDeckShip--;
-				}
-			}
-			
-			while(threeDeckShip > 0)
-			{
-				column = createRandomNumber(10);
-				line   = createRandomNumber(10);
-				orient = createRandomNumber(2);
-				
-				if(	checkBattleField( column, line, orient, 3) )
-				{
-					putShipInBattleField(column, line, orient, 3);
-					saveDataAboutShipLocation(orient, 3);					
-					threeDeckShip--;
-				}
-			}	
-			
-			while(twoDeckShip > 0)
-			{
-				column = createRandomNumber(10);
-				line   = createRandomNumber(10);
-				orient = createRandomNumber(2);
-				
-				if(	checkBattleField( column, line, orient, 2) )
-				{
-					putShipInBattleField(column, line, orient, 2);
-					saveDataAboutShipLocation(orient, 2);								
-					twoDeckShip--;
-				}
-			}
-			
-			while(oneDeckShip > 0)
-			{
-				column = createRandomNumber(10);
-				line   = createRandomNumber(10);
-				orient = createRandomNumber(2);
-				
-				if(	checkBattleField( column, line, orient, 1) )
-				{
-					putShipInBattleField(column, line, orient, 1);
-					saveDataAboutShipLocation(orient, 1);							
-					oneDeckShip--;
-				}
-			}
-			
-			traceShipsArray();
-			trace("----------------------------");
+		{			
+			fillBattlefieldTargetElements(FOUR_DECK_SHIP_NUMBER,	FOUR_DECK_INDEX);
+			fillBattlefieldTargetElements(THREE_DECK_SHIP_NUMBER, 	THREE_DECK_INDEX);
+			fillBattlefieldTargetElements(TWO_DECK_SHIP_NUMBER,		TWO_DECK_INDEX);
+			fillBattlefieldTargetElements(ONE_DECK_SHIP_NUMBER,		ONE_DECK_INDEX);		
 		}
 		
-		private function saveDataAboutShipLocation(orient:int, deck:int):void
+		/**
+		 * 	Get the value of a column, line, and direction calling createRandomNumber. 
+		 *  Check the received parameters. If received parameters were approached, call putShipInBattleField, saveDataAboutShipLocation;
+		 */		
+		private function fillBattlefieldTargetElements(_shipNumber:int, _deckNumber:int):void
+		{
+			var column:	int, line:int, direction:int;
+			
+			while(_shipNumber > 0)
+			{
+				column 		= createRandomNumber(FIELD_LENGHT);
+				line   		= createRandomNumber(FIELD_LENGHT);
+				direction   = createRandomNumber(2);
+				
+				if(	checkBattleFieldForFreeSpace( column, line, direction, _deckNumber) )
+				{
+					putShipInBattleField(column, line, direction, _deckNumber);
+					saveDataAboutShipLocation(direction, _deckNumber);							
+					_shipNumber--;
+				}
+			}
+		}
+		
+		/**		
+		 * Saving main data about instance Ship.
+		 */		
+		private function saveDataAboutShipLocation(_direction:int, _deckNumber:int):void
 		{
 			var _ship:Ship 		= new Ship();
 			_ship.column 		= shipPosition[0][0];
 			_ship.line 			= shipPosition[0][1];
-			_ship.orient 		= orient;
-			_ship.deck 			= deck;					
+			_ship.direction 	= _direction;
+			_ship.deck 			= _deckNumber;					
 			_ship.coordinates 	= shipPosition;						
 			
 			Ships.push(_ship);
 		}
 		
-		private function checkBattleField(column:int, line:int, orient:int, deckNumber:int):Boolean
+		/**
+		 * Check out whether you can put a ship in battleField with the appropriate parameters:
+		 * @param _column 		- column number,
+		 * @param _line			- line number,
+		 * @param _direction	- direction along a column(1) or a line(0),
+		 * @param _deckNumber   - number of decks on ships.
+		 */		
+		private function checkBattleFieldForFreeSpace(_column:int, _line:int, _direction:int, _deckNumber:int):Boolean
 		{
-			var res:Boolean, resCouter:int, i:int;
+			var res:Boolean, deckCouter:int, i:int;
 			
-			if(orient == 1)
+			if(_direction == HORIZONTAL_DIRECTION)
 			{				
-				if( (9 - column - deckNumber ) >= 0 )
+				if( (MAXIMUM_CELL_VALUES - _column - _deckNumber ) >= 0 )
 				{
-					for (i = column; i < column + deckNumber; i++) 
+					for (i = _column; i < _column + _deckNumber; i++) 
 					{
-						if(battleField[i][line] == 0)		resCouter++;
+						if(battleField[i][_line] == EMPTY_CELL_INDEX)	deckCouter++;
 					}	
 					
 				}else{
 					
-					for (i = column; i > column - deckNumber; i--) 
+					for (i = _column; i > _column - _deckNumber; i--) 
 					{
-						if(battleField[i][line] == 0)		resCouter++;
+						if(battleField[i][_line] == EMPTY_CELL_INDEX)	deckCouter++;
 					}
 				}
 				
-			}else
+			}else if(_direction == VERTICAL_DIRECTION)
 			{						
-				if( (9 - line - deckNumber ) >= 0 )
+				if( (MAXIMUM_CELL_VALUES - _line - _deckNumber ) >= 0 )
 				{
-					for (i = line; i < line + deckNumber; i++) 
+					for (i = _line; i < _line + _deckNumber; i++) 
 					{
-						if(battleField[column][i] == 0)		resCouter++;
+						if(battleField[_column][i] == EMPTY_CELL_INDEX)	deckCouter++;
 					}
 					
 				}else{
 					
-					for (i = line; i > line - deckNumber; i--) 
+					for (i = _line; i > _line - _deckNumber; i--) 
 					{
-						if(battleField[column][i] == 0)		resCouter++;
+						if(battleField[_column][i] == EMPTY_CELL_INDEX)	deckCouter++;
 					}					
 				}				
 			}
 			
-			if(resCouter == deckNumber) res = true;
+			if(deckCouter == _deckNumber) res = true;
 			
 			return res;
 		}
 		
-		private function putShipInBattleField(column:int, line:int, orient:int, deckNumber:int):void
+		/**
+		 * Saving a ship in battleField with the appropriate parameters:
+		 * @param _column 		- column number,
+		 * @param _line			- line number,
+		 * @param _direction	- direction along a column(1) or a line(0),
+		 * @param _deckNumber   - number of decks on ships.<br>
+		 * 
+		 * Setting empty cells around ships with index WATER_CELL_INDEX.
+		 */	
+		private function putShipInBattleField(_column:int, _line:int, _direction:int, _deckNumber:int):void
 		{
-			var increment:Boolean, i:int, j:int, lineRanges:Array, columnRanges:Array;		
-			shipPosition = new Array();	
+			var increment:Boolean, i:int, j:int, lineRanges:Array, columnRanges:Array,	shipPosition:Vector.<int> = new Vector.<int>;
 						
-			if(orient == 1)
+			if(_direction == HORIZONTAL_DIRECTION)
 			{				
-				if( (9 - column - deckNumber ) >= 0 )
+				if( (MAXIMUM_CELL_VALUES - _column - _deckNumber ) >= 0 )
 				{
 					increment = true;
 					
-					for (i = column; i < column + deckNumber; i++) 
+					for (i = _column; i < _column + _deckNumber; i++) 
 					{
-						if(battleField[i][line] == 0)
+						if(battleField[i][_line] == EMPTY_CELL_INDEX)
 						{
-							battleField[i][line] = deckNumber;
-							saveShipCoordinates(i, line, true);	
+							battleField[i][_line] = _deckNumber;
+							saveShipCoordinates(i, _line, true);	
 						}
 					}											
 				}else{
 					
-					for (i = column; i > column - deckNumber; i--) 
+					for (i = _column; i > _column - _deckNumber; i--) 
 					{
-						if(battleField[i][line] == 0)
+						if(battleField[i][_line] == EMPTY_CELL_INDEX)
 						{
-							battleField[i][line] = deckNumber;
-							saveShipCoordinates(i, line, false);												
+							battleField[i][_line] = _deckNumber;
+							saveShipCoordinates(i, _line, false);												
 						}
 					}
 				}				
-				
-				/// fill water around ships				
-				lineRanges 	 = setRange(line, 1 , increment);			
-				columnRanges = setRange(column, deckNumber , increment);					
+								
+				lineRanges 	 = setRange(_line, 1 , increment);			
+				columnRanges = setRange(_column, _deckNumber , increment);					
 				
 				for (j = lineRanges[0]; j < lineRanges[1] + 1; j++) 
 				{
 					for (i = columnRanges[0]; i < columnRanges[1] + 1; i++) 
 					{
-						if(battleField[i][j] == 0)	battleField[i][j] = 9;										
+						if(battleField[i][j] == EMPTY_CELL_INDEX)	battleField[i][j] = WATER_CELL_INDEX;										
 					}
-				}	
+				}				
 				
-			}else
+			}else if(_direction == VERTICAL_DIRECTION)
 			{						
-				if( (9 - line - deckNumber ) >= 0 )
+				if( (MAXIMUM_CELL_VALUES - _line - _deckNumber ) >= 0 )
 				{
 					increment = true;
 					
-					for (i = line; i < line + deckNumber; i++) 
+					for (i = _line; i < _line + _deckNumber; i++) 
 					{
-						if(battleField[column][i] == 0)
+						if(battleField[_column][i] == EMPTY_CELL_INDEX)
 						{
-							battleField[column][i] = deckNumber;
-							saveShipCoordinates(column, i, true);							
+							battleField[_column][i] = _deckNumber;
+							saveShipCoordinates(_column, i, true);							
 						}
 					}					
 				}else{
 					
-					for (i = line; i > line - deckNumber; i--) 
+					for (i = _line; i > _line - _deckNumber; i--) 
 					{
-						if(battleField[column][i] == 0)
+						if(battleField[_column][i] == EMPTY_CELL_INDEX)
 						{
-							battleField[column][i] = deckNumber;
-							saveShipCoordinates(column, i, false);									
+							battleField[_column][i] = _deckNumber;
+							saveShipCoordinates(_column, i, false);									
 						}
 					}					
 				}					
-				
-				/// fill water around ships				
-				lineRanges 	 = setRange(line, deckNumber , increment);			
-				columnRanges = setRange(column, 1 , increment);					
+			
+				lineRanges 	 = setRange(_line, _deckNumber , increment);			
+				columnRanges = setRange(_column, 1 , increment);					
 				
 				for (j = columnRanges[0]; j < columnRanges[1] + 1; j++) 
 				{
 					for (i = lineRanges[0]; i < lineRanges[1] + 1; i++) 
 					{
-						if(battleField[j][i] == 0)	battleField[j][i] = 9;
+						if(battleField[j][i] == EMPTY_CELL_INDEX)	battleField[j][i] = WATER_CELL_INDEX;
 					}
-				}	
+				}				
 			}			
 		}
 		
-		private function saveShipCoordinates(column:int, line:int, d:Boolean):void
+		/**
+		 * Save the position of all decks for target ship.
+		 * @param _column 		- column number,
+		 * @param _line			- line number,
+		 * @param _moveToTheEnd - save at the beginning or end shipPosition.
+		 * 
+		 */		
+		private function saveShipCoordinates(_column:int, _line:int, _moveToTheEnd:Boolean):void
 		{
-			var singlePosition:Array = new Array();							
-			singlePosition.push(column);
-			singlePosition.push(line);				
-			
-			if(d)	shipPosition.push(singlePosition);
-			else	shipPosition.unshift(singlePosition);
+			if(_moveToTheEnd)	shipPosition.push([_column, _line]);
+			else				shipPosition.unshift([_column, _line]);
 		}
 		
-		private function setRange(column:int, deck:int, increment:Boolean):Array
+		/**
+		 * Calculate range for filling water around ship depend on parameters:
+		 * @param _cell 		- init ship position, column or line,
+		 * @param _deckNumber   - number of decks on ships,
+		 * @param _increment	- check next or previous cell. <br>
+		 * 
+		 * Return element with [0] - low range, [1] - high range.
+		 */		
+		private function setRange(_cell:int, _deckNumber:int, _increment:Boolean):Array
 		{
 			var lowRange:int, highRange:int;
 			
-			if(column == 0)
+			if(_cell == 0)
 			{
-				lowRange = 0;
-				highRange = column + deck;
+				lowRange  = 0;
+				highRange = _cell + _deckNumber;
 				
-			}else if(column == 9)
+			}else if(_cell == MAXIMUM_CELL_VALUES)
 			{
-				lowRange = column - deck;
-				highRange = 9;
+				lowRange  = _cell - _deckNumber;
+				highRange = MAXIMUM_CELL_VALUES;
 				
 			}else
 			{
-				if(increment)
+				if(_increment)
 				{
-					lowRange = column - 1;
-					highRange = column + deck;
+					lowRange  = _cell - 1;
+					highRange = _cell + _deckNumber;
 					
 				}else{
 					
-					lowRange  = column - deck;
-					highRange = column + 1;
+					lowRange  = _cell - _deckNumber;
+					highRange = _cell + 1;
 				}
-			}
-			
-			var res:Array = new Array();			
-			res.push(lowRange);
-			res.push(highRange);			
-			return 	res;
-		}
-		
-		private function traceShipsArray():void
-		{
-			for (var i:int = 0; i < battleField.length; i++) 
-			{ 
-				trace(battleField[i][0],"| |", battleField[i][1],"| |",battleField[i][2],"| |",battleField[i][3],"| |",battleField[i][4],"| |",battleField[i][5],"| |",battleField[i][6],"| |",battleField[i][7],"| |",battleField[i][8],"| |",battleField[i][9]);				
 			}			
+		
+			return 	[lowRange, highRange];
 		}
 		
-		private function createRandomNumber(range:int):int
+		/**
+		 *  Get random int number from 0 to <b>_value</b>.
+		 */		
+		private function createRandomNumber(_value:int):int
 		{			
-			var res:int = Math.random()*range;			
-			return res;
+			return Math.random()*_value;	
 		}
 		
+		/** 
+		 * Reset variables.
+		 */		
 		public function cleanData():void
 		{
-			if(battleField)		battleField = null;
-			if(Ships) 			Ships = null;
-			if(shipPosition) 	shipPosition = null;			
+			if(battleField)		battleField.length = 0;			
+			if(shipPosition) 	shipPosition.length = 0;		
+			
+			battleField  = null;
+			shipPosition = null;
 		}
 	}
 }

@@ -5,13 +5,13 @@ package app.model.game
 		public var column:		int;
 		public var line:		int;
 		
-		public var orient:	int;
+		public var direction:	int;
 		public var deck:	int;
 		
 		public var drowned:	Boolean;
 		
-		public var coordinates:Array;
-		
+		public var coordinates:Vector.<Array> = new Vector.<Array>;
+	
 		public function Ship(){}
 	}
 }

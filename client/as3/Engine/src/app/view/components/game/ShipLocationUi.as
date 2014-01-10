@@ -331,7 +331,7 @@ package app.view.components.game
 			
 			for (var j:int = 0; j < shipsLocationLogic.shipsLocationArray.length; j++) 
 			{
-				locateShip(shipsLocationLogic.shipsLocationArray[j].column, shipsLocationLogic.shipsLocationArray[j].line, shipsLocationLogic.shipsLocationArray[j].orient, shipsLocationLogic.shipsLocationArray[j].deck, j);
+				locateShip(shipsLocationLogic.shipsLocationArray[j].column, shipsLocationLogic.shipsLocationArray[j].line, shipsLocationLogic.shipsLocationArray[j].direction, shipsLocationLogic.shipsLocationArray[j].deck, j);
 			}					
 		}
 		

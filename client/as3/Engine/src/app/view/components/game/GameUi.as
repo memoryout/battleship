@@ -73,7 +73,7 @@ package app.view.components.game
 		{				
 			for (var j:int = 0; j < _model._userShips[0].length; j++) 
 			{
-				locateShip(_model._userShips[0][j].column, _model._userShips[0][j].line, _model._userShips[0][j].orient, _model._userShips[0][j].deck, j);
+				locateShip(_model._userShips[0][j].column, _model._userShips[0][j].line, _model._userShips[0][j].direction, _model._userShips[0][j].deck, j);
 			}
 						
 			if(_model._gameStatus != 0) restoreView();							
@@ -230,7 +230,7 @@ package app.view.components.game
 					if(val[2][0][0] == _model._userShips[0][i].column && val[2][0][1] == _model._userShips[0][i].line)
 					{
 						deck 		= _model._userShips[0][i].deck;
-						shipOrient	= _model._userShips[0][i].orient;
+						shipOrient	= _model._userShips[0][i].direction;
 						shipCounter = i;
 						break;
 					}

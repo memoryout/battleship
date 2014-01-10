@@ -4,7 +4,7 @@ package app.controller.logic.game
 	import app.model.events.ModelEvents;
 	import app.model.game.FullGameData;
 	import app.model.game.GameList;
-	import app.model.game.pShipsArray;
+	import app.model.game.PShipsArray;
 	import app.model.save.SavedData;
 	import app.model.save.pSavedGame;
 	import app.model.server.pServer;
@@ -24,7 +24,7 @@ package app.controller.logic.game
 	public class GameLogic extends Mediator
 	{ 		
 		public static const NAME:	String = "GameLogic";
-		private var _shipsArray:	pShipsArray;
+		private var _shipsArray:	PShipsArray;
 		private var _pServer:		pServer;
 		public  var _gameData:		FullGameData;
 		
@@ -41,7 +41,7 @@ package app.controller.logic.game
 		{
 			super();
 			
-			_shipsArray 	= this.facade.retrieveProxy(pShipsArray.NAME) as pShipsArray;		
+			_shipsArray 	= this.facade.retrieveProxy(PShipsArray.NAME) as PShipsArray;		
 			_pServer 		= this.facade.retrieveProxy( pServer.NAME ) as pServer;
 			_savedProxy 	= this.facade.retrieveProxy(pSavedGame.NAME) as pSavedGame;
 		}

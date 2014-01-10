@@ -6,7 +6,7 @@ package app.view.components.game
 	{
 		private var shipsArray:				Vector.<Vector.<int>>;
 		private var shipsLocation:			Vector.<Ship>;
-		private var shipPosition:			Array;
+		private var shipPosition:			Vector.<Array>;
 		
 		private var dragedShipsOldPosition:	Array 	 				= new Array();	
 		public  var dataForRotate		  :	Object 	 				=		
@@ -58,7 +58,7 @@ package app.view.components.game
 				if(column == shipsLocation[i].column && line == shipsLocation[i].line){}
 				else 
 				{						
-					putShipInBattleField(shipsLocation[i].column, shipsLocation[i].line, shipsLocation[i].orient, shipsLocation[i].deck);						
+					putShipInBattleField(shipsLocation[i].column, shipsLocation[i].line, shipsLocation[i].direction, shipsLocation[i].deck);						
 				}											
 			}		
 		}
@@ -110,7 +110,7 @@ package app.view.components.game
 		public function putShipInBattleField(column:int, line:int, orient:int, deckNumber:int, saveShipLocation:Boolean = false):void
 		{
 			var increment:Boolean, i:int, lineRanges:Array, columnRanges:Array, j:int;
-			shipPosition = new Array();	
+			shipPosition = new Vector.<int>;
 			
 			if(orient == 1)
 			{				
@@ -192,14 +192,10 @@ package app.view.components.game
 			if(saveShipLocation) updateShipLocation(column, line, orient);
 		}
 		
-		private function saveShipCoordinates(column:int, line:int, d:Boolean):void
-		{
-			var singlePosition:Array = new Array();							
-			singlePosition.push(column);
-			singlePosition.push(line);				
-			
-			if(d)	shipPosition.push(singlePosition);
-			else	shipPosition.unshift(singlePosition);
+		private function saveShipCoordinates(_column:int, _line:int, _moveToTheEnd:Boolean):void
+		{		
+			if(_moveToTheEnd)	shipPosition.push([_column, _line]);
+			else				shipPosition.unshift([_column, _line]);
 		}
 		
 		private function updateShipLocation(column:int, line:int, orient:int):void
@@ -210,7 +206,7 @@ package app.view.components.game
 				{
 					shipsLocation[i].column 		= column;
 					shipsLocation[i].line 			= line;
-					shipsLocation[i].orient 		= orient;
+					shipsLocation[i].direction 		= orient;
 					shipsLocation[i].coordinates 	= shipPosition;
 					return;
 				}
