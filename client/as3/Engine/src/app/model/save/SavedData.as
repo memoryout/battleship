@@ -6,10 +6,10 @@ package app.model.save
 	public class SavedData
 	{	
 		public var userShips:			Vector.<Vector.<Ship>> = new Vector.<Vector.<Ship>>;
-		public var enemyShips:			Vector.<Vector.<Ship>> = new Vector.<Vector.<Ship>>;
+		public var oponentShips:		Vector.<Vector.<Ship>> = new Vector.<Vector.<Ship>>;
 		
 		public var userBattleField:		Vector.<Vector.<int>>  = new Vector.<Vector.<int>>;
-		public var enemyBattleField:	Vector.<Vector.<int>>  = new Vector.<Vector.<int>>;
+		public var oponentBattleField:	Vector.<Vector.<int>>  = new Vector.<Vector.<int>>;
 		
 		public var status:				uint;	 
 		public var opponentType:		uint;
@@ -20,16 +20,16 @@ package app.model.save
 		
 		public var shipsWasLocated:		Boolean;
 		
-		public var hitedPlayerShipPosition:Array;
+		public var hitedUserShipPosition:Array;
 		
-		public var killedShipsCouterCom:	int;
-		public var killedShipsCouterPl:		int;		
+		public var killedOponentShipsCouter:	int;
+		public var killedUserShipsCouter:		int;		
 		
-		public var lastHitShipPositionCom:	Array;
-		public var lastHitShipPositionPl:	Array;
+		public var lastHitedOponentShipPosition:	Vector.<Array>;
+		public var lastHitedUserShipPosition:	Vector.<Array>;
 		
-		public var oponentShipIsHit:	Boolean;
-		public var shipIsKill:			Boolean;
+		public var oponentShipIsHited:	Boolean;
+		public var shipIsKilled:			Boolean;
 		public var findAnotherShip:		Boolean;
 		
 		public var isHited:				Boolean = true;
@@ -55,26 +55,26 @@ package app.model.save
 			var obj:Object = new Object();
 			
 			obj.userShips 			= userShips;
-			obj.enemyShips 			= enemyShips;
+			obj.enemyShips 			= oponentShips;
 			
 			obj.userBattleField 	= userBattleField;
-			obj.enemyBattleField 	= enemyBattleField;
+			obj.enemyBattleField 	= oponentBattleField;
 			
 			obj.status 				= status;
 			obj.gameType 			= gameType;
 			obj.gameInfo 			= gameInfo;
 			obj.opponentType 		= opponentType;
 			obj.shipsWasLocated 			= shipsWasLocated;
-			obj.hitedPlayerShipPosition 	= hitedPlayerShipPosition;
+			obj.hitedPlayerShipPosition 	= hitedUserShipPosition;
 			
-			obj.killedShipsCouterCom 		= killedShipsCouterCom;
-			obj.killedShipsCouterPl 		= killedShipsCouterPl;
+			obj.killedShipsCouterCom 		= killedOponentShipsCouter;
+			obj.killedShipsCouterPl 		= killedUserShipsCouter;
 			
-			obj.lastHitShipPositionCom 		= lastHitShipPositionCom;
-			obj.lastHitShipPositionPl 		= lastHitShipPositionPl;
+			obj.lastHitShipPositionCom 		= lastHitedOponentShipPosition;
+			obj.lastHitShipPositionPl 		= lastHitedUserShipPosition;
 			
-			obj.oponentShipIsHit 		= oponentShipIsHit;
-			obj.shipIsKill 				= shipIsKill;
+			obj.oponentShipIsHit 		= oponentShipIsHited;
+			obj.shipIsKill 				= shipIsKilled;
 
 			obj.isHited 				= isHited;
 			obj.currentSelectedCell 	= currentSelectedCell;

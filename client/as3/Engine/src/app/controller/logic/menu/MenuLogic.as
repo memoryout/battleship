@@ -80,7 +80,7 @@ package app.controller.logic.menu
 		
 		private function getListGame(e:TimerEvent=null):void
 		{
-			_server.getActiveGameList();
+			_server.getGameUpdate();
 		}
 		
 		public override function listNotificationInterests():Array

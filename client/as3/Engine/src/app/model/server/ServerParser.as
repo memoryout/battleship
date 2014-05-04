@@ -127,8 +127,8 @@ package app.model.server
 				
 			}else{
 				
-				_gameData.enemyShips.push(sortByDeck(allShipsLocation));  
-				_gameData.enemyBattleField = shipsBattleField;
+				_gameData.oponentShips.push(sortByDeck(allShipsLocation));  
+				_gameData.oponentBattleField = shipsBattleField;
 			}
 		}
 		
@@ -194,33 +194,44 @@ package app.model.server
 			_gameData = GameList.Get().getCurrentGameData();
 			var hitData:Object;
 			
-			for (var i:int = 0; i < val.gamesList.length; i++) 
+			if(val.gameInfo)
 			{
-				if(!GameList.Get().findGameInList( val.gamesList[i].game_id))
-				{					
-					GameList.Get().addGameToList(val.gamesList[i]);					
+				if(!GameList.Get().gameWithPlayerIsLive())									
+					GameList.Get().addGameToList(val.gameInfo);								
+				else				
+					_gameData.status = val.gameInfo.status;	
 				
-				}else if(val.gamesList[i].game_id == _gameData.id)
-				{			
-					GameList.Get().addGameToList(val.gamesList[i]);
-					_gameData.status = val.gamesList[i].status;
-				}
-				
-				if(val.gamesList[i].notifications.length > 0 && val.gamesList[i].game_id == _gameData.id)
-				{				
-					hitData = {ship_status:"0", line:"0", column:"0", player:"oponent", killed_coordinates:""};
-					
-					hitData.ship_status = val.gamesList[i].notifications[0].data.status;
-					
-					hitData.line  = val.gamesList[i].notifications[0].data.target[1];
-					hitData.column = val.gamesList[i].notifications[0].data.target[0];	
-					
-					if(hitData.ship_status == 2)
+				if(val.gameInfo.notifications)
+				{		
+					for (var j:int = 0; j < val.gameInfo.notifications.length; j++) 
 					{
-						hitData.killed_coordinates = getFullPosiotionKilledShip(val.gamesList[i].notifications[0].data.ship.coordinates[0], val.gamesList[i].notifications[0].data.ship.coordinates[1], val.gamesList[i].notifications[0].data.ship.decks);
-					}
+						hitData = {ship_status:"0", line:"0", column:"0", player:"oponent", killed_coordinates:""};
+						
+						hitData.ship_status = val.gameInfo.notifications[j].data.status;
+						
+						hitData.line   = val.gameInfo.notifications[j].data.target[1];
+						hitData.column = val.gameInfo.notifications[j].data.target[0];	
+						
+						if(hitData.ship_status == 2)
+						{
+							hitData.killed_coordinates = getFullPosiotionKilledShip(
+								val.gameInfo.notifications[j].data.ship.coordinates[0], 
+								val.gameInfo.notifications[j].data.ship.coordinates[1], 
+								val.gameInfo.notifications[j].data.ship.decks);
+						}
+						
+						/*if(hitData.ship_status == 1) 					
+							_userData.userBattleField[hitData.column][hitData.line] = 8;					
+						else if(hitData.ship_status == 0)
+							_userData.userBattleField[hitData.column][hitData.line] = 7;			
+						else if(hitData.ship_status == 2)
+						{
+							_userData.userBattleField[hitData.column][hitData.line] = 6;							
+							_userData.userBattleField = _playLogic.setWaterAroundFullKilledShip(_userData.userBattleField, hitData.killed_coordinates, true, false);				
+						}	*/
+					}				
 				}
-			}
+			}		
 			
 			this.sendNotification(GameEvents.UPDATE_GAME, hitData);	
 		}
@@ -295,8 +306,8 @@ package app.model.server
 					break;
 				}
 				
-				case "active_games": 											 // get request with active game list
-				{						
+				case "get_updates": 											 // get request with active game list
+				{										
 					updateActiveGameData(obj);											
 					break;
 				}
@@ -318,18 +329,6 @@ package app.model.server
 				case "game_play": 											 // get request with active game list
 				{						
 					determinateActionAfterMove(obj);											
-					break;
-				}	
-					
-				case "remove_game": 											 // after request for remove game from list
-				{						
-					
-					break;
-				}
-					
-					
-				case "error":
-				{
 					break;
 				}
 			}

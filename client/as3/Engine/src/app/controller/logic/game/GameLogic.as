@@ -56,8 +56,8 @@ package app.controller.logic.game
 			_gameData = GameList.Get().getCurrentGameData();	
 						
 			
-			_gameData.userShips 		= _shipsArray.getShipsPosition();				
-			_gameData.userBattleField 	= _shipsArray.getBattleField();
+			_gameData.userShips 		= _shipsArray.getShipsPosition().concat();				
+			_gameData.userBattleField 	= _shipsArray.getBattleField().concat();
 			_shipsArray.cleanData();
 				
 			this.sendNotification(GameEvents.PLACE_SHIPS, [_gameData.userShips, _gameData.userBattleField]);								
@@ -168,24 +168,24 @@ package app.controller.logic.game
 			{
 				if(_gameData.status == FullGameData.STEP_OF_INCOMING_USER) // updating after player move
 				{						
-					if(_gameData.shipIsKill || _gameData.isHited)
+					if(_gameData.shipIsKilled || _gameData.isHited)
 					{						
-						if(!_gameData.shipIsKill)
+						if(!_gameData.shipIsKilled)
 						{							
 							this.sendNotification(GameEvents.UPDATE_OPONENT_FIELD, [_gameData.isHited, _gameData.currentSelectedCell]);									
 							
 						}else{
 							
-							this.sendNotification(GameEvents.UPDATE_OPONENT_FIELD, [_gameData.isHited, _gameData.currentSelectedCell, _gameData.lastHitShipPositionCom]);
+							this.sendNotification(GameEvents.UPDATE_OPONENT_FIELD, [_gameData.isHited, _gameData.currentSelectedCell, _gameData.lastHitedOponentShipPosition]);
 							
-							if(_gameData.killedShipsCouterCom == 10)	
+							if(_gameData.killedOponentShipsCouter == 10)	
 							{
 								_gameData.status = FullGameData.INCOMING_USER_WON;	
 								checkStateGameWithComputer();
 							}
 						}
 						
-						_gameData.isHited = _gameData.shipIsKill = false;	
+						_gameData.isHited = _gameData.shipIsKilled = false;	
 						
 					}else{
 						
@@ -201,24 +201,24 @@ package app.controller.logic.game
 				
 				}else													// updating after computer move
 				{						
-					if(_gameData.shipIsKill || _gameData.isHited)
+					if(_gameData.shipIsKilled || _gameData.isHited)
 					{
-						if(!_gameData.shipIsKill)
+						if(!_gameData.shipIsKilled)
 						{										
 							this.sendNotification(GameEvents.UPDATE_USER_FIELD, [_gameData.isHited, _gameData.currentSelectedCell]);
 							
 							_gameData.isHited 			= false;
-							_gameData.oponentShipIsHit 	= true;			
+							_gameData.oponentShipIsHited 	= true;			
 							
 						}else{
 							
-							this.sendNotification(GameEvents.UPDATE_USER_FIELD, [_gameData.isHited, _gameData.currentSelectedCell, _gameData.lastHitShipPositionPl]);
+							this.sendNotification(GameEvents.UPDATE_USER_FIELD, [_gameData.isHited, _gameData.currentSelectedCell, _gameData.lastHitedUserShipPosition]);
 							
-							_gameData.oponentShipIsHit 	= _gameData.shipIsKill = false;		
+							_gameData.oponentShipIsHited 	= _gameData.shipIsKilled = false;		
 							_gameData.findAnotherShip 	= true;											
 						}		
 						
-						if(_gameData.killedShipsCouterPl == 10)
+						if(_gameData.killedUserShipsCouter == 10)
 						{
 							_gameData.status = FullGameData.OPPONENT_WON;		
 							checkStateGameWithComputer();
@@ -281,8 +281,8 @@ package app.controller.logic.game
 			
 			_gameData.opponentType 	  = FullGameData.OPPONENT_COMPUTER;			
 				
-			_gameData.enemyShips 		= _shipsArray.getShipsPosition();				
-			_gameData.enemyBattleField 	= _shipsArray.getBattleField();
+			_gameData.oponentShips 		= _shipsArray.getShipsPosition().concat();				
+			_gameData.oponentBattleField 	= _shipsArray.getBattleField().concat();
 			_shipsArray.cleanData();
 				
 			_gameData.setOpponent( "Computer", "0" );	
@@ -293,8 +293,8 @@ package app.controller.logic.game
 			
 			this.sendNotification(GameEvents.INIT_COMPTER_LOGIC);
 			this.sendNotification(GameEvents.GET_GAME_DATA, _gameData);
-			this.sendNotification(GameEvents.SHOW_GAME, [	_gameData.userShips,  _gameData.userBattleField, 
-															_gameData.enemyShips, _gameData.enemyBattleField, 
+			this.sendNotification(GameEvents.SHOW_GAME, [	_gameData.userShips.concat(),  _gameData.userBattleField.concat(), 
+															_gameData.oponentShips, _gameData.oponentBattleField, 
 															_gameData.id, 		  _gameData.status
 														]);			
 			
@@ -371,7 +371,7 @@ package app.controller.logic.game
 			}		
 			
 			this.sendNotification(GameEvents.SHOW_GAME, [	_gameData.userShips,  _gameData.userBattleField, 
-															_gameData.enemyShips, _gameData.enemyBattleField, 
+															_gameData.oponentShips, _gameData.oponentBattleField, 
 															_gameData.id, 		  _gameData.status]);	
 			
 			if(gameWithComputer)	checkStateGameWithComputer();	

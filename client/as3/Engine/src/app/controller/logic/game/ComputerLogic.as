@@ -16,6 +16,25 @@ package app.controller.logic.game
 	
 	public class ComputerLogic extends Mediator
 	{		
+		private static const COMPUTER_SIDE:	String = "computer";
+		private static const PLAYER_SIDE:	String = "player";
+		
+		private static const UP_WAY:		String = "up";
+		private static const DOWN_WAY:		String = "down";
+		private static const LEFT_WAY:		String = "left";
+		private static const RIGHT_WAY:		String = "right";
+		
+		private static const ONE_DECK:		int = 1;
+		private static const TWO_DECK:		int = 2;
+		private static const THREE_DECK:	int = 3;
+		private static const FOUR_DECK:		int = 4;
+		
+		private static const HITED_DECK:	int = 7;
+		private static const KILLED_SHIP:	int = 8;
+		
+		private static const WATER_CELL:	int = 9;
+		private static const EMPTY_CELL:	int = 0;
+		
 		private var _gameData:	FullGameData;	
 									
 		private var _timer:		Timer = new Timer(1000, 1);
@@ -37,37 +56,35 @@ package app.controller.logic.game
 		 * If ship is kill call setWaterAroundFullHitedShip().
 		 * If selected cell is not already selected, send message about end of the step.
 		 */		
-		private function checkForHitComputerField():void
+		private function checkOponentField():void
 		{		
 			var column:int 	= correctRange(_gameData.currentSelectedCell[0]);
 			var line:int 	= correctRange(_gameData.currentSelectedCell[1]);
 		
-			var comShipsPositions:Vector.<Vector.<int>> = _gameData.enemyBattleField;
+			var oponentShipsPositions:Vector.<Vector.<int>> = _gameData.oponentBattleField;
 			
-			var cellAlreadySelected:Boolean;
+			var currentCellValue:int = oponentShipsPositions[column][line] as int, cellAlreadySelected:Boolean;
 			
-			var currentCellValue:int = comShipsPositions[column][line] as int;
-			
-			if(currentCellValue == 4 || currentCellValue == 3 || currentCellValue == 2 || currentCellValue == 1)
+			if(currentCellValue == FOUR_DECK || currentCellValue == THREE_DECK || currentCellValue == TWO_DECK || currentCellValue == ONE_DECK)
 			{
 				_gameData.isHited = true;
-				comShipsPositions[column][line] = 7;
+				oponentShipsPositions[column][line] = HITED_DECK;
 				
-				checkIfShipIskill(column, line, currentCellValue, "computer");
+				checkingWhetherTheShipKilled(column, line, currentCellValue, COMPUTER_SIDE);
 				
-			}else if(currentCellValue == 9 || currentCellValue == 0)
+			}else if(currentCellValue == WATER_CELL || currentCellValue == EMPTY_CELL)
 			{
 				_gameData.isHited = false;
-				comShipsPositions[column][line] = 8;
+				oponentShipsPositions[column][line] = KILLED_SHIP;
 				
-			}else if(currentCellValue == 8 || currentCellValue == 7)
-			{
-				cellAlreadySelected = true;
-			}
+			}else if(currentCellValue == KILLED_SHIP || currentCellValue == HITED_DECK)
+				cellAlreadySelected = true;			
 			
-			if(_gameData.shipIsKill)	setWaterAroundFullHitedShip(comShipsPositions, "computer", _gameData.lastHitShipPositionCom);				
+			if(_gameData.shipIsKilled)	
+				setWaterAroundFullHitedShip(oponentShipsPositions, COMPUTER_SIDE, _gameData.lastHitedOponentShipPosition);				
 						
-			if(!cellAlreadySelected) 	this.sendNotification(GameEvents.MOVE_END);				
+			if(!cellAlreadySelected) 	
+				this.sendNotification(GameEvents.MOVE_END);				
 		}	
 		
 		/** 
@@ -77,48 +94,44 @@ package app.controller.logic.game
 		 * If ship is kill call setWaterAroundFullHitedShip().
 		 * If selected cell is not already selected, send message about end of the step.
 		 */		
-		private function checkForHitPlayerField(e:TimerEvent = null):void
+		private function checkUserField():void
 		{				
 			var toSelect:Array = new Array();			
-			var plShipsPositions:Vector.<Vector.<int>> = _gameData.userBattleField;
+			var userShipsPositions:Vector.<Vector.<int>> = _gameData.userBattleField;
 			
-			if(!_gameData.oponentShipIsHit || _gameData.findAnotherShip)
+			if(!_gameData.oponentShipIsHited || _gameData.findAnotherShip)
 			{
-				if(_gameData.findAnotherShip)	_gameData.findAnotherShip = false;
+				if(_gameData.findAnotherShip)	
+					_gameData.findAnotherShip = false;
 				
-				toSelect = elementToSelect(plShipsPositions);				
-			
-			}else{
-								
-				toSelect = setNextPositionAfterHit(plShipsPositions);
-			}
-					
-			var cellAlreadySelected:Boolean;			
-			
+				toSelect = elementToSelect(userShipsPositions);				
+			}else								
+				toSelect = setNextPositionAfterHit(userShipsPositions);			
+						
 			var column:	int			 = _gameData.currentSelectedCell[0] = toSelect[0];
 			var line:	int 		 = _gameData.currentSelectedCell[1] = toSelect[1];				
 			
-			var currentCellValue:int = plShipsPositions[column][line] as int;
+			var currentCellValue:int = userShipsPositions[column][line] as int, cellAlreadySelected:Boolean;	
 						
-			if(currentCellValue == 4 || currentCellValue == 3 || currentCellValue == 2 || currentCellValue == 1)
+			if(currentCellValue == FOUR_DECK || currentCellValue == THREE_DECK || currentCellValue == TWO_DECK || currentCellValue == ONE_DECK)
 			{
 				_gameData.isHited = true;
-				plShipsPositions[column][line] = 7;
-				checkIfShipIskill(column, line, currentCellValue, "Player");
+				userShipsPositions[column][line] = HITED_DECK;
+				checkingWhetherTheShipKilled(column, line, currentCellValue, PLAYER_SIDE);
 				
-			}else if(currentCellValue == 9 || currentCellValue == 0)
+			}else if(currentCellValue == WATER_CELL || currentCellValue == EMPTY_CELL)
 			{
 				_gameData.isHited = false;
-				plShipsPositions[column][line] = 8;
+				userShipsPositions[column][line] = KILLED_SHIP;
 				
-			}else if(currentCellValue == 8 || currentCellValue == 7)
-			{
-				cellAlreadySelected = true;
-			}			
+			}else if(currentCellValue == KILLED_SHIP || currentCellValue == HITED_DECK)			
+				cellAlreadySelected = true;						
 			
-			if(_gameData.shipIsKill)	setWaterAroundFullHitedShip(plShipsPositions, "player", _gameData.lastHitShipPositionPl);
+			if(_gameData.shipIsKilled)	
+				setWaterAroundFullHitedShip(userShipsPositions, PLAYER_SIDE, _gameData.lastHitedUserShipPosition);
 									
-			if(!cellAlreadySelected)	this.sendNotification(GameEvents.MOVE_END);			
+			if(!cellAlreadySelected)	
+				this.sendNotification(GameEvents.MOVE_END);			
 		}
 		
 		/**
@@ -129,25 +142,28 @@ package app.controller.logic.game
 		 * @param side	 - whose step is.
 		 * 
 		 */		
-		private function checkIfShipIskill(column:int, line:int, deck:int, side:String):void
+		private function checkingWhetherTheShipKilled(column:int, line:int, deck:int, side:String):void
 		{
-			if(side == "computer")
+			var i:int, j:int, allShipsPosition:Vector.<Ship>, shipPosition:Vector.<Array>;
+			
+			if(side == COMPUTER_SIDE)
 			{			
-				var allShipsPosition:Vector.<Ship> = _gameData.enemyShips[0];
+				allShipsPosition = _gameData.oponentShips[0];
 				
-				for (var j:int = 0; j < allShipsPosition.length; j++) 
+				for (j = 0; j < allShipsPosition.length; j++) 
 				{
-					var arr:Array = allShipsPosition[j].coordinates as Array;
+					shipPosition = allShipsPosition[j].coordinates as Vector.<Array>;
 					
-					for (var i:int = 0; i < arr.length; i++) 
+					for (i = 0; i < shipPosition.length; i++) 
 					{
-						if(arr[i][0] == column && arr[i][1] == line)
+						if(shipPosition[i][0] == column && shipPosition[i][1] == line)
 						{
 							setShipHitDeck(j, _gameData.infoAboutShipsDecksCom, side);													
 							
-							if(!_gameData.lastHitShipPositionCom) _gameData.lastHitShipPositionCom = new Array();
+							if(!_gameData.lastHitedOponentShipPosition) 
+								_gameData.lastHitedOponentShipPosition = new Vector.<Array>();
 							
-							_gameData.lastHitShipPositionCom = arr;						
+							_gameData.lastHitedOponentShipPosition = shipPosition as Vector.<Array>;						
 							return;
 						}
 					}	
@@ -155,28 +171,28 @@ package app.controller.logic.game
 				
 			}else{
 				
-				var allShipsPositionP:Vector.<Ship> = _gameData.userShips[0];
+				allShipsPosition = _gameData.userShips[0];
 				
-				for (var n:int = 0; n < allShipsPositionP.length; n++) 
+				for (j = 0; j < allShipsPosition.length; j++) 
 				{
-					var arrP:Array = allShipsPositionP[n].coordinates as Array;
+					shipPosition = allShipsPosition[j].coordinates as Vector.<Array>;
 					
-					for (var t:int = 0; t < arrP.length; t++) 
+					for (i = 0; i < shipPosition.length; i++) 
 					{
-						if(arrP[t][0] == column && arrP[t][1] == line)
+						if(shipPosition[i][0] == column && shipPosition[i][1] == line)
 						{						
-							setShipHitDeck(n, _gameData.infoAboutShipsDecksPl, side);
+							setShipHitDeck(j, _gameData.infoAboutShipsDecksPl, side);
 							
-							if(!_gameData.lastHitShipPositionPl) _gameData.lastHitShipPositionPl = new Array();
-							_gameData.lastHitShipPositionPl = arrP;
-																				
-							var _arr:Array = new Array();
-							_arr.push(column);
-							_arr.push(line);
+							if(!_gameData.lastHitedUserShipPosition) 
+								_gameData.lastHitedUserShipPosition = new Vector.<Array>();
+						
+							_gameData.lastHitedUserShipPosition = shipPosition;
+														
+							_gameData.hitedUserShipPosition.push([column, line]);
 							
-							_gameData.hitedPlayerShipPosition.push(_arr);
-							
-							if(_gameData.shipIsKill)	_gameData.hitedPlayerShipPosition = new Array();			
+							if(_gameData.shipIsKilled)	
+								_gameData.hitedUserShipPosition = new Array();			
+						
 							return;
 						}
 					}	
@@ -194,18 +210,18 @@ package app.controller.logic.game
 		{
 			if(elementVal == 0)
 			{
-				_gameData.shipIsKill = true;						
+				_gameData.shipIsKilled = true;						
 				changeShipsCounter(side);
 				
-				if(side == "computer")	_gameData.enemyShips[0][ship].drowned = true;					
-				else					_gameData.userShips[0][ship].drowned  = true;				
+				if(side == COMPUTER_SIDE)	_gameData.oponentShips[0][ship].drowned = true;					
+				else						_gameData.userShips[0][ship].drowned  = true;				
 			}
 		}
 		
 		private function changeShipsCounter(side:String):void
 		{
-			if(side == "computer")	_gameData.killedShipsCouterCom++; 
-			else 					_gameData.killedShipsCouterPl++;
+			if(side == COMPUTER_SIDE)	_gameData.killedOponentShipsCouter++; 
+			else 						_gameData.killedUserShipsCouter++;
 		}	
 		
 		/**
@@ -215,21 +231,33 @@ package app.controller.logic.game
 		 * @param arr_t - killed ship position.
 		 * 
 		 */		
-		private function setWaterAroundFullHitedShip(vc:Vector.<Vector.<int>>, side:String, arr_t:Array = null):void
+		private function setWaterAroundFullHitedShip(vc:Vector.<Vector.<int>>, side:String, arr_t:Vector.<Array> = null):void
 		{
-			var low_column:int, high_column:int, low_line:int, high_line:int;
+			var lowColumn:int, highColumn:int, lowLine:int, highLine:int;
 			
-			if(arr_t[0][0] - 1 >= 0) 				low_column  = arr_t[0][0] - 1; 					else low_column  = 0;
+			if(arr_t[0][0] - 1 >= 0) 				
+				lowColumn   = arr_t[0][0] - 1; 					
+			else 
+				lowColumn   = 0;
 						
-			if(arr_t[arr_t.length - 1][0] + 1 <= 9)	high_column = arr_t[arr_t.length - 1][0] + 1;	else high_column = 9;
+			if(arr_t[arr_t.length - 1][0] + 1 <= 9)	
+				highColumn  = arr_t[arr_t.length - 1][0] + 1;	
+			else 
+				highColumn  = 9;
 			
-			if(arr_t[0][1] - 1 >= 0)				low_line 	= arr_t[0][1] - 1;					else low_line 	 = 0;			
+			if(arr_t[0][1] - 1 >= 0)				
+				lowLine 	= arr_t[0][1] - 1;					
+			else 
+				lowLine 	= 0;			
 			
-			if(arr_t[arr_t.length - 1][1] + 1 <= 9)	high_line 	= arr_t[arr_t.length - 1][1] + 1;	else high_line   = 9;
+			if(arr_t[arr_t.length - 1][1] + 1 <= 9)	
+				highLine 	= arr_t[arr_t.length - 1][1] + 1;	
+			else 
+				highLine    = 9;
 						
-			for (var i:int = low_column; i < high_column + 1; i++) 
+			for (var i:int = lowColumn; i < highColumn + 1; i++) 
 			{
-				for (var j:int = low_line; j < high_line + 1; j++) 
+				for (var j:int = lowLine; j < highLine + 1; j++) 
 				{
 					setAndSendSelectedCell(vc, side, i, j);
 				}
@@ -245,7 +273,7 @@ package app.controller.logic.game
 			{
 				vc[column][line] = 8;
 				
-				if(side == "computer")
+				if(side == COMPUTER_SIDE)
 				{
 					this.sendNotification(GameEvents.UPDATE_OPONENT_FIELD, [false, [column, line] ]);		
 					
@@ -263,40 +291,40 @@ package app.controller.logic.game
 		 */		
 		private function removeFromStrategyHitedCell(column:int, line:int):void
 		{
-			if(_gameData.strategyArrayOne.length > 0)
+			if(_gameData.strategyOne.length > 0)
 			{
-				for (var i:int = 0; i < _gameData.strategyArrayOne.length; i++) 
+				for (var i:int = 0; i < _gameData.strategyOne.length; i++) 
 				{
-					if(_gameData.strategyArrayOne[i][0] == column && 
-					   _gameData.strategyArrayOne[i][1] == line)
+					if(_gameData.strategyOne[i][0] == column && 
+					   _gameData.strategyOne[i][1] == line)
 					{
-						_gameData.strategyArrayOne.splice(i,1);						
+						_gameData.strategyOne.splice(i,1);						
 						return;
 					}
 				}				
 			}
 			
-			if(_gameData.strategyArrayTwo.length > 0)
+			if(_gameData.strategyTwo.length > 0)
 			{
-				for (var k:int = 0; k < _gameData.strategyArrayTwo.length; k++) 
+				for (var k:int = 0; k < _gameData.strategyTwo.length; k++) 
 				{
-					if(_gameData.strategyArrayTwo[k][0] == column && 
-					   _gameData.strategyArrayTwo[k][1] == line)
+					if(_gameData.strategyTwo[k][0] == column && 
+					   _gameData.strategyTwo[k][1] == line)
 					{
-						_gameData.strategyArrayTwo.splice(k,1);		
+						_gameData.strategyTwo.splice(k,1);		
 						return;
 					}
 				}		
 			}
 			
-			if(_gameData.strategyArrayThree.length > 0)
+			if(_gameData.strategyThree.length > 0)
 			{
-				for (var p:int = 0; p < _gameData.strategyArrayThree.length; p++) 
+				for (var p:int = 0; p < _gameData.strategyThree.length; p++) 
 				{
-					if(_gameData.strategyArrayThree[p][0] == column && 
-					   _gameData.strategyArrayThree[p][1] == line)
+					if(_gameData.strategyThree[p][0] == column && 
+					   _gameData.strategyThree[p][1] == line)
 					{
-						_gameData.strategyArrayThree.splice(p,1);
+						_gameData.strategyThree.splice(p,1);
 						return;
 					}
 				}		
@@ -311,32 +339,50 @@ package app.controller.logic.game
 		{			
 			var res:Array = new Array(), way:String;
 			
-			var arrayOfHitedCells:Array = _gameData.hitedPlayerShipPosition;
+			var arrayOfHitedCells:Array = _gameData.hitedUserShipPosition;
 			var numberOfHitedCells:int = arrayOfHitedCells.length;				
+			
+			if(numberOfHitedCells == 3) /// sort elements in array						
+				sortArray(arrayOfHitedCells);					
 			
 			if(numberOfHitedCells > 1)
 			{
-				if(arrayOfHitedCells[1][1] 		> arrayOfHitedCells[0][1])		way = "right";
-				else if(arrayOfHitedCells[1][1] < arrayOfHitedCells[0][1])		way = "left";		
-				if(arrayOfHitedCells[1][0] 		> arrayOfHitedCells[0][0])		way = "down";			
-				else if(arrayOfHitedCells[1][0] < arrayOfHitedCells[0][0])		way = "up";
+				if(arrayOfHitedCells[1][1] 		> arrayOfHitedCells[0][1])		way = RIGHT_WAY;
+				else if(arrayOfHitedCells[1][1] < arrayOfHitedCells[0][1])		way = LEFT_WAY;		
+				if(arrayOfHitedCells[1][0] 		> arrayOfHitedCells[0][0])		way = DOWN_WAY;			
+				else if(arrayOfHitedCells[1][0] < arrayOfHitedCells[0][0])		way = UP_WAY;
 			}		
 			
 			var arrWithPossibleNextPosition:Array = checkCellOnException(arrayOfHitedCells[0][0], arrayOfHitedCells[0][1], numberOfHitedCells, way);	
-		
+			
 			/// check all possible position if they are not selected
 			for (var i:int = 0; i < arrWithPossibleNextPosition.length; i++) 
 			{
 				var singleElement:Array = arrWithPossibleNextPosition[i];
 				
-				if(vc[singleElement[0]][singleElement[1]] != 8 && vc[singleElement[0]][singleElement[1]] != 7)
+				if(_gameData.oponentBattleField[singleElement[0]][singleElement[1]] != 1)
 				{
-					res = singleElement;
+					res = singleElement;					
+					_gameData.oponentBattleField[res[0]][res[1]] = 1;
+					
 					break;
 				}
-			}				
+			}
+			
+			if(res.length == 0)			
+				trace("!!");			
+			
 			return res;		
 		}		
+		
+		private function sortArray(arr:Array):void
+		{			
+			if(arr[0][0] == arr[1][0])			
+				arr.sortOn([1], [Array.NUMERIC]);
+				
+			else if(arr[0][1] == arr[1][1])			
+				arr.sortOn([0], [Array.NUMERIC]);				
+		}
 		
 		/**
 		 * Set combination to hit ship.
@@ -353,169 +399,244 @@ package app.controller.logic.game
 		 * |4|  |5|  |6|
 		 * -------------
 		 */		
-		private function checkCellOnException(culumn:int, line:int, hited_cells:int, way:String):Array
+		private function checkCellOnException(culumn:int, line:int, hitedCells:int, way:String):Array
 		{
 			var res:Boolean;
-			var arr:Array = new Array();
+			var cell:Array = new Array();
 			
 			if(culumn == 0 && line == 0)		//1
 			{
-				if(hited_cells > 1)
+				if(hitedCells > 1 && way)
 				{					
-					if(way == "right")		arr.push([culumn, 				line + hited_cells]);					
-					else if(way == "down")	arr.push([culumn + hited_cells, line]);	
-				}
-							
-				arr.push([culumn + 1, 	line]);
-				arr.push([culumn, 	 	line + 1]);
+					if(     way == RIGHT_WAY)	cell.push([culumn, 				line + hitedCells]);					
+					else if(way == DOWN_WAY)	cell.push([culumn + hitedCells, line]);	
+					
+				}else
+				{
+					cell.push([culumn + 1, 	line]);
+					cell.push([culumn, 	 	line + 1]);
+				}				
 				
 			}else if(culumn == 0 && line > 0)	//2
 			{
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
+				{
+					cell = usualCalculation(line, culumn, hitedCells, way);	
+					
+				}else if(hitedCells == 1 && way)
 				{	
-					if(way == "right")		arr.push([culumn, line + hited_cells]);					
-					else if(way == "left")	arr.push([culumn, line - hited_cells]);		
-					else if(way == "down")	arr.push([culumn + hited_cells, line]);		
+					if(way == RIGHT_WAY)		cell.push([culumn, line + hitedCells]);					
+					else if(way == LEFT_WAY)	cell.push([culumn, line - hitedCells]);		
+					else if(way == DOWN_WAY)	cell.push([culumn + hitedCells, line]);		
+					
+				}else
+				{
+					cell.push([culumn,	 	line - 1]);
+					cell.push([culumn + 1,	line]);
+					cell.push([culumn, 	 	line + 1]);
 				}
-				
-				arr.push([culumn,	 	line - 1]);
-				arr.push([culumn + 1,	line]);
-				arr.push([culumn, 	 	line + 1]);
 				
 			}else if(culumn == 0 && line == 9)	//3
 			{
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
 				{	
-					if(way == "left")		arr.push([culumn, 				line - hited_cells]);					
-					else if(way == "down")	arr.push([culumn + hited_cells, line]);	
-				}
-				
-				arr.push([culumn, 	 line - 1]);
-				arr.push([culumn + 1,line]);
+					if(way == LEFT_WAY)			cell.push([culumn, 				line - hitedCells]);					
+					else if(way == DOWN_WAY)	cell.push([culumn + hitedCells, line]);	
+					
+				}else
+				{
+					cell.push([culumn, 	 line - 1]);
+					cell.push([culumn + 1,line]);
+				}			
 				
 			}else if(culumn == 9 && line == 0)	//4
 			{
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
 				{	
-					if(way == "right")		arr.push([culumn, 				line + hited_cells]);					
-					else if(way == "up")	arr.push([culumn - hited_cells, line]);	
-				}
-				
-				arr.push([culumn - 1, line]);
-				arr.push([culumn, 	  line + 1]);
+					if(way == RIGHT_WAY)		cell.push([culumn, 				line + hitedCells]);					
+					else if(way == UP_WAY)		cell.push([culumn - hitedCells, line]);	
+					
+				}else
+				{
+					cell.push([culumn - 1, line]);
+					cell.push([culumn, 	  line + 1]);
+				}			
 				
 			}else if(culumn == 9 && line > 0)	//5
 			{
-				if(hited_cells > 1)
+				if(hitedCells > 1 && way)
+				{
+					cell = usualCalculation(line, culumn, hitedCells, way);	
+					
+				}else if(hitedCells == 1 && way)
 				{		
-					if(way == "right")		arr.push([culumn, 				line + hited_cells]);					
-					else if(way == "left")	arr.push([culumn, 				line - hited_cells]);	
-					else if(way == "up")	arr.push([culumn - hited_cells, line]);		
+					if(way == RIGHT_WAY)		cell.push([culumn, 				line + hitedCells]);					
+					else if(way == LEFT_WAY)	cell.push([culumn, 				line - hitedCells]);	
+					else if(way == UP_WAY)		cell.push([culumn - hitedCells, line]);		
+					
+				}else
+				{						
+					cell.push([culumn - 1, line]);
+					cell.push([culumn, 	  line + 1]);		
+					cell.push([culumn, 	  line - 1]);						
 				}
-				
-				arr.push([culumn - 1, line]);
-				arr.push([culumn, 	  line + 1]);		
-				arr.push([culumn, 	  line - 1]);	
 				
 			}else if(culumn == 9 && line == 9)	//6
 			{				
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
 				{	
-					if(way == "left")		arr.push([culumn, 				line - hited_cells]);					
-					else if(way == "down")	arr.push([culumn - hited_cells, line]);	
+					if(way == LEFT_WAY)			cell.push([culumn, 				line - hitedCells]);					
+					else if(way == DOWN_WAY)	cell.push([culumn - hitedCells, line]);	
+					
+				}else{					
+					cell.push([culumn - 1, line]);				
+					cell.push([culumn, 	  line - 1]);	
 				}
 				
-				arr.push([culumn - 1, line]);				
-				arr.push([culumn, 	  line - 1]);	
 				
 			}else if(culumn > 0 && line == 0)	//7
 			{
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
 				{
-					if(way == "up")			arr.push([culumn - hited_cells, line]);					
-					else if(way == "down")	arr.push([culumn + hited_cells, line]);	
-					if(way == "right")		arr.push([culumn, 				line + hited_cells]);	
+					cell = usualCalculation(line, culumn, hitedCells, way);	
+					
+				}else if(hitedCells == 1 && way)
+				{
+					if(way == UP_WAY)			cell.push([culumn - hitedCells, line]);					
+					else if(way == DOWN_WAY)	cell.push([culumn + hitedCells, line]);	
+					if(way == RIGHT_WAY)		cell.push([culumn, 				line + hitedCells]);	
+					
+				}else{
+					
+					cell.push([culumn, 		line + 1]);	
+					cell.push([culumn - 1, 	line]);			
+					cell.push([culumn + 1, 	line]);	
 				}
-				
-				arr.push([culumn, 		line + 1]);	
-				arr.push([culumn - 1, 	line]);			
-				arr.push([culumn + 1, 	line]);	
 				
 			}else if(culumn > 0 && line == 9)	//8
 			{
-				if(hited_cells == 1)
+				if(hitedCells > 1 && way)
 				{
-					if(way == "up")			arr.push([culumn - hited_cells, line]);					
-					else if(way == "down")	arr.push([culumn + hited_cells, line]);	
-					if(way == "left")		arr.push([culumn, 				line - hited_cells]);	
-				}
+					cell = usualCalculation(line, culumn, hitedCells, way);	
+					
+				}else if(hitedCells == 1 && way)
+				{
+					if(way == UP_WAY)			cell.push([culumn - hitedCells, line]);					
+					else if(way == DOWN_WAY)	cell.push([culumn + hitedCells, line]);	
+					if(way == LEFT_WAY)		cell.push([culumn, 				line - hitedCells]);	
+					
+				}else
+				{
+					cell.push([culumn, 		line - 1]);	
+					cell.push([culumn - 1, 	line]);			
+					cell.push([culumn + 1,	line]);	
+				}			
 				
-				arr.push([culumn, 		line - 1]);	
-				arr.push([culumn - 1, 	line]);			
-				arr.push([culumn + 1,	line]);	
 				
 			}else{								//9	
 				
-				if(hited_cells == 1)
+				if(hitedCells == 1)
 				{					
-					arr.push([culumn + 1, line]);
-					arr.push([culumn - 1, line]);
-					arr.push([culumn, 	  line + 1]);
-					arr.push([culumn, 	  line - 1]);					
-				
-				}else{
+					cell.push([culumn + 1, line]);
+					cell.push([culumn - 1, line]);
+					cell.push([culumn, 	  line + 1]);
+					cell.push([culumn, 	  line - 1]);					
 					
-					if(way == "up")			
-					{						
-						arr.push([culumn - hited_cells, line]);		
-						arr.push([culumn + 1,		 	line]);
-					}
-					else if(way == "down")	
-					{						
-						arr.push([culumn + hited_cells, line]);	
-						arr.push([culumn - 1,		 	line]);
-					}
-					else if(way == "left")	
-					{						
-						arr.push([culumn, 				line - hited_cells]);	
-						arr.push([culumn,			 	line + 1]);
-					}
-					else if(way == "right")	
-					{						
-						arr.push([culumn,			 	line + hited_cells]);
-						arr.push([culumn,			 	line - 1]);
-					}				
+				}else{
+					cell = usualCalculation(line, culumn, hitedCells, way);	
 				}
 			}
 			
+			if(cell[0][0] > 9)
+			{
+				trace("> 9");
+				cell[0][0] = 9;
+			}
+			
+			if(cell[0][1] > 9)
+			{
+				trace("> 9");
+				cell[0][1] = 9;
+			}
+			
+			if(cell[0][0] < 0)
+			{
+				trace("< 0");
+				cell[0][0] = 0;
+			}
+			
+			if(cell[0][1] < 0)
+			{
+				trace("< 0");
+				cell[0][1] = 0;
+			}
+			
+			return cell;
+		}	
+		
+		private function usualCalculation(line:int, culumn:int, hitedCells:int, way:String):Array
+		{
+			var arr:Array = new Array();			
+			
+			if(way == UP_WAY)			
+			{						
+				arr.push([culumn - hitedCells, line]);		
+				arr.push([culumn + 1,		 	line]);
+			}
+			else if(way == DOWN_WAY)	
+			{						
+				arr.push([culumn + hitedCells, line]);	
+				arr.push([culumn - 1,		 	line]);
+			}
+			else if(way == LEFT_WAY)	
+			{						
+				arr.push([culumn, 				line - hitedCells]);	
+				arr.push([culumn,			 	line + 1]);
+			}
+			else if(way == RIGHT_WAY)	
+			{						
+				arr.push([culumn,			 	line + hitedCells]);
+				arr.push([culumn,			 	line - 1]);			
+			}
+			
 			return arr;
-		}						
+		}
 		
 		private function elementToSelect(vc:Vector.<Vector.<int>>):Array
 		{			
 			var res:Array 			= new Array(), wasRemove:Boolean;		
 			var strategyArray:Array = getStrategyArray();			
-			var randomNumber:int    = randomElementsFromArrayWithStrategy(strategyArray);		
+			var randomNumber:int    = randomElementsFromArrayWithStrategy(strategyArray);
 			
 			res = strategyArray[randomNumber];
-					
-			while(vc[res[0]][res[1]] as int == 8 || vc[res[0]][res[1]] as int == 7)
+			
+			if(res && res.length > 0 && _gameData.oponentBattleField[res[1]][res[0]] == 1)
 			{
-				strategyArray = getStrategyArray();				
-				randomNumber  = randomElementsFromArrayWithStrategy(strategyArray);
-				
-				res = strategyArray[randomNumber];
-				
-				if(strategyArray.length > 0)
-				{			
-					wasRemove = true;
-					strategyArray.splice(randomNumber, 1);			
-				}
-			}		
+				while(_gameData.oponentBattleField[res[1]][res[0]] == 1)
+				{
+					if(!res)	trace("!!!");					
+					
+					strategyArray = getStrategyArray();				
+					randomNumber  = randomElementsFromArrayWithStrategy(strategyArray);
+					
+					res = strategyArray[randomNumber];
+					
+					if(strategyArray.length > 0)
+					{			
+						wasRemove = true;
+						strategyArray.splice(randomNumber, 1);			
+					}
+				}	
+			}			
 			
 			if(strategyArray.length > 0 && !wasRemove)	strategyArray.splice(randomNumber, 1);	
 			
-			return res;
+			if(!res)
+			{
+				trace("!!!");
+			}
+			
+			return [res[1], res[0]];
 		}
 		
 		private function randomElementsFromArrayWithStrategy(arr:Array):int
@@ -528,9 +649,9 @@ package app.controller.logic.game
 		{
 			var res:Array = new Array();
 			
-			if(_gameData.strategyArrayOne.length > 0)			res = _gameData.strategyArrayOne;				
-			else if(_gameData.strategyArrayTwo.length > 0)		res = _gameData.strategyArrayTwo;				
-			else if(_gameData.strategyArrayThree.length > 0)	res = _gameData.strategyArrayThree;
+			if(_gameData.strategyOne.length > 0)			res = _gameData.strategyOne;				
+			else if(_gameData.strategyTwo.length > 0)		res = _gameData.strategyTwo;				
+			else if(_gameData.strategyThree.length > 0)	res = _gameData.strategyThree;
 					
 			return res;
 		}
@@ -580,13 +701,13 @@ package app.controller.logic.game
 					
 				case GameEvents.SHOW_PLAYER_MOVE:
 				{
-					checkForHitComputerField();
+					checkOponentField();
 					break;
 				}
 					
 				case GameEvents.SHOW_COM_MOVE:
 				{
-					checkForHitPlayerField();
+					checkUserField();
 					break;
 				}
 					

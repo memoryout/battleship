@@ -223,7 +223,7 @@ package app.view.components.game
 				_drownedShip.x = val[2][0][1]*_curCell;
 				_drownedShip.y = val[2][0][0]*_curCell;
 				
-				_drownedShip.gotoAndStop((val[2] as Array).length);
+				_drownedShip.gotoAndStop((val[2] as Vector.<Array>).length);
 				
 				for (var i:int = 0; i < _model._userShips[0].length; i++) 
 				{

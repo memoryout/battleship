@@ -66,10 +66,10 @@ package app.model.save
 				var _gameDataWithComputer:FullGameData = new FullGameData();
 				
 				_gameDataWithComputer.userShips.push(convertShipLocation(data.userShips[0]));
-				_gameDataWithComputer.enemyShips.push(convertShipLocation(data.enemyShips[0]));			
+				_gameDataWithComputer.oponentShips.push(convertShipLocation(data.enemyShips[0]));			
 				
 				_gameDataWithComputer.userBattleField  = convertBattleField(data.userBattleField);
-				_gameDataWithComputer.enemyBattleField = convertBattleField(data.enemyBattleField);
+				_gameDataWithComputer.oponentBattleField = convertBattleField(data.enemyBattleField);
 				
 				_gameDataWithComputer.status 		= data.status;				
 				_gameDataWithComputer.opponentType	= data.opponentType;
@@ -77,16 +77,16 @@ package app.model.save
 				_gameDataWithComputer.gameInfo 		= data.gameInfo;
 				
 				_gameDataWithComputer.shipsWasLocated 			= data.shipsWasLocated;
-				_gameDataWithComputer.hitedPlayerShipPosition 	= data.hitedPlayerShipPosition;
+				_gameDataWithComputer.hitedUserShipPosition 	= data.hitedPlayerShipPosition;
 				
-				_gameDataWithComputer.killedShipsCouterCom 	= data.killedShipsCouterCom;
-				_gameDataWithComputer.killedShipsCouterPl 	= data.killedShipsCouterPl;
+				_gameDataWithComputer.killedOponentShipsCouter 	= data.killedShipsCouterCom;
+				_gameDataWithComputer.killedUserShipsCouter 	= data.killedShipsCouterPl;
 				
-				_gameDataWithComputer.lastHitShipPositionCom = data.lastHitShipPositionCom;
-				_gameDataWithComputer.lastHitShipPositionPl  = data.lastHitShipPositionPl;
+				_gameDataWithComputer.lastHitedOponentShipPosition = data.lastHitShipPositionCom as Vector.<Array>;
+				_gameDataWithComputer.lastHitedUserShipPosition  = data.lastHitShipPositionPl as Vector.<Array>;
 				
-				_gameDataWithComputer.oponentShipIsHit 	= data.oponentShipIsHit;
-				_gameDataWithComputer.shipIsKill 		= data.shipIsKill;
+				_gameDataWithComputer.oponentShipIsHited 	= data.oponentShipIsHit;
+				_gameDataWithComputer.shipIsKilled 		= data.shipIsKill;
 				
 				_gameDataWithComputer.isHited 				= data.isHited;
 				_gameDataWithComputer.currentSelectedCell 	= data.currentSelectedCell;
@@ -94,9 +94,9 @@ package app.model.save
 				_gameDataWithComputer.infoAboutShipsDecksPl 	= data.infoAboutShipsDecksPl;
 				_gameDataWithComputer.infoAboutShipsDecksCom 	= data.infoAboutShipsDecksCom;
 				
-				_gameDataWithComputer.strategyArrayOne 				= data.arrayWithPositionForFindShip;
-				_gameDataWithComputer.strategyArrayTwo 	= data.arrayWithPositionForFindShipSecondStep;
-				_gameDataWithComputer.strategyArrayThree 	= data.arrayWithPositionForFindShipThirdStep;
+				_gameDataWithComputer.strategyOne 				= data.arrayWithPositionForFindShip;
+				_gameDataWithComputer.strategyTwo 	= data.arrayWithPositionForFindShipSecondStep;
+				_gameDataWithComputer.strategyThree 	= data.arrayWithPositionForFindShipThirdStep;
 				
 				GameList.Get().addGameWithComputerToList(_gameDataWithComputer);
 				GameList.Get().setComputerGameData(_gameDataWithComputer);
@@ -113,10 +113,10 @@ package app.model.save
 		public function setSavedData(val:Object):void
 		{
 			_data.userShips 								= val.userShips;
-			_data.enemyShips 								= val.enemyShips;			
+			_data.oponentShips 								= val.oponentShips;			
 			
 			_data.userBattleField 							= val.userBattleField;
-			_data.enemyBattleField 							= val.enemyBattleField;
+			_data.oponentBattleField 						= val.oponentBattleField;
 			
 			_data.status 									= val.status;
 			_data.gameType 									= val.gameType;
@@ -124,16 +124,16 @@ package app.model.save
 			_data.opponentType								= val.opponentType;
 			
 			_data.shipsWasLocated 							= val.shipsWasLocated;
-			_data.hitedPlayerShipPosition 					= val.hitedPlayerShipPosition;
+			_data.hitedUserShipPosition 					= val.hitedUserShipPosition;
 			
-			_data.killedShipsCouterCom 						= val.killedShipsCouterCom;
-			_data.killedShipsCouterPl 						= val.killedShipsCouterPl;
+			_data.killedOponentShipsCouter 					= val.killedOponentShipsCouter;
+			_data.killedUserShipsCouter 					= val.killedUserShipsCouter;
 			
-			_data.lastHitShipPositionCom 					= val.lastHitShipPositionCom;
-			_data.lastHitShipPositionPl 					= val.lastHitShipPositionPl;
+			_data.lastHitedOponentShipPosition 				= val.lastHitedOponentShipPosition as Vector.<Array>;
+			_data.lastHitedUserShipPosition 				= val.lastHitedUserShipPosition;
 			
-			_data.oponentShipIsHit 							= val.oponentShipIsHit;
-			_data.shipIsKill 								= val.shipIsKill;
+			_data.oponentShipIsHited 						= val.oponentShipIsHited;
+			_data.shipIsKilled 								= val.shipIsKilled;
 			
 			_data.isHited 									= val.isHited;
 			_data.currentSelectedCell 						= val.currentSelectedCell;
@@ -141,9 +141,9 @@ package app.model.save
 			_data.infoAboutShipsDecksPl 					= val.infoAboutShipsDecksPl;
 			_data.infoAboutShipsDecksCom 					= val.infoAboutShipsDecksCom;
 			
-			_data.arrayWithPositionForFindShip 				= val.strategyArrayOne;
-			_data.arrayWithPositionForFindShipSecondStep 	= val.strategyArrayTwo;
-			_data.arrayWithPositionForFindShipThirdStep 	= val.strategyArrayThree;
+			_data.arrayWithPositionForFindShip 				= val.strategyOne;
+			_data.arrayWithPositionForFindShipSecondStep 	= val.strategyTwo;
+			_data.arrayWithPositionForFindShipThirdStep 	= val.strategyThree;
 		}
 		
 		private function convertShipLocation(val:Object):Vector.<Ship>
@@ -154,7 +154,7 @@ package app.model.save
 			{	
 				var _ship:Ship = new Ship();
 				_ship.column 		= val[i].column;
-				_ship.coordinates	= val[i].coordinates;
+				_ship.coordinates	= val[i].coordinates as Vector.<Array>;
 				_ship.deck			= val[i].deck;
 				_ship.drowned		= val[i].drowned;
 				_ship.line			= val[i].line;

@@ -51,21 +51,18 @@ package app.model.game
 			var data:MainGameData = new MainGameData();
 						
 			if(val)
-			{			
-				data.id 			= val.id;				
+			{	
 				data.status 		= val.status;					
 				
 				gameList[0] = data;
 			}
 		}
-		public function findGameInList(val:int):Boolean
+		public function gameWithPlayerIsLive():Boolean
 		{
 			var res:Boolean;
 			
-			for (var i:String in gameList) 
-			{
-				if(gameList[i].id == val) res = true;				
-			}
+			if(gameList[1]) res = true;				
+			
 			
 			return res;
 		}

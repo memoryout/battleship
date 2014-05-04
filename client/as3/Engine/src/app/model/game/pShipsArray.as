@@ -75,7 +75,7 @@ package app.model.game
 			
 			battleField		= new Vector.<Vector.<int>>;
 			Ships 			= new Vector.<Ship>;	
-			shipPosition	= new Vector.<int>;
+			shipPosition	= new Vector.<Array>;
 		
 			for (var n:int = 0; n < FIELD_LENGHT; n++) 
 			{
@@ -104,6 +104,8 @@ package app.model.game
 			
 			while(_shipNumber > 0)
 			{
+				shipPosition	= new Vector.<Array>;
+				
 				column 		= createRandomNumber(FIELD_LENGHT);
 				line   		= createRandomNumber(FIELD_LENGHT);
 				direction   = createRandomNumber(2);
@@ -127,7 +129,7 @@ package app.model.game
 			_ship.line 			= shipPosition[0][1];
 			_ship.direction 	= _direction;
 			_ship.deck 			= _deckNumber;					
-			_ship.coordinates 	= shipPosition;						
+			_ship.coordinates 	= shipPosition.concat();						
 			
 			Ships.push(_ship);
 		}

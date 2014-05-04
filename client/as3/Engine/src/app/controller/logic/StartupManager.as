@@ -174,10 +174,8 @@ package app.controller.logic
 		
 		private function tryAuthorizationOnServer():void
 		{			
-			_serverProxy.makeAuthorization( _configProxy.getConfigData().login, _configProxy.getConfigData().pass );
-		}
-		
-		
+			_serverProxy.newUser( _configProxy.getConfigData().login, _configProxy.getConfigData().pass );
+		}		
 		
 		private function showLoginDialog():void
 		{
