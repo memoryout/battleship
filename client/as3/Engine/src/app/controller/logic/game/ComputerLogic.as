@@ -359,19 +359,21 @@ package app.controller.logic.game
 			for (var i:int = 0; i < arrWithPossibleNextPosition.length; i++) 
 			{
 				var singleElement:Array = arrWithPossibleNextPosition[i];
-				
-				if(_gameData.oponentBattleField[singleElement[0]][singleElement[1]] != 1)
+							
+				if(vc[singleElement[0]][singleElement[1]] != HITED_DECK && vc[singleElement[0]][singleElement[1]] != KILLED_SHIP)
 				{
-					res = singleElement;					
-					_gameData.oponentBattleField[res[0]][res[1]] = 1;
-					
-					break;
+					res = singleElement;										
+						
+					break;						
 				}
 			}
 			
-			if(res.length == 0)			
-				trace("!!");			
+			if(res.length == 0)
+			{
+				trace("!!");	
+			}					
 			
+			trace("next: ", res);
 			return res;		
 		}		
 		

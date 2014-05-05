@@ -7,7 +7,7 @@ package app.model.game
 		public static const NAME:						String = "pShipsArray";
 			
 		private var battleField:						Vector.<Vector.<int>>;
-		private var Ships:								Vector.<Ship>;		
+		private var ships:								Vector.<Ship>;		
 		private var shipPosition:						Vector.<Array>;
 		
 		static private const MAXIMUM_CELL_VALUES:		int = 9;
@@ -51,7 +51,7 @@ package app.model.game
 			fillBattleField();
 			
 			var res:Vector.<Vector.<Ship>> = new Vector.<Vector.<Ship>>;
-			res.push(Ships);				
+			res.push(ships);				
 			return res;
 		}
 		
@@ -74,7 +74,7 @@ package app.model.game
 			fourDeckShip	= FOUR_DECK_SHIP_NUMBER;
 			
 			battleField		= new Vector.<Vector.<int>>;
-			Ships 			= new Vector.<Ship>;	
+			ships 			= new Vector.<Ship>;	
 			shipPosition	= new Vector.<Array>;
 		
 			for (var n:int = 0; n < FIELD_LENGHT; n++) 
@@ -131,7 +131,7 @@ package app.model.game
 			_ship.deck 			= _deckNumber;					
 			_ship.coordinates 	= shipPosition.concat();						
 			
-			Ships.push(_ship);
+			ships.push(_ship);
 		}
 		
 		/**
