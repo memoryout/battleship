@@ -30,7 +30,7 @@ package app.controller.logic.game
 		private static const FOUR_DECK:		int = 4;
 		
 		private static const HITED_DECK:	int = 7;
-		private static const KILLED_SHIP:	int = 8;
+		private static const SELECTED_CELL:	int = 8;
 		
 		private static const WATER_CELL:	int = 9;
 		private static const EMPTY_CELL:	int = 0;
@@ -75,9 +75,9 @@ package app.controller.logic.game
 			}else if(currentCellValue == WATER_CELL || currentCellValue == EMPTY_CELL)
 			{
 				_gameData.isHited = false;
-				oponentShipsPositions[column][line] = KILLED_SHIP;
+				oponentShipsPositions[column][line] = SELECTED_CELL;
 				
-			}else if(currentCellValue == KILLED_SHIP || currentCellValue == HITED_DECK)
+			}else if(currentCellValue == SELECTED_CELL || currentCellValue == HITED_DECK)
 				cellAlreadySelected = true;			
 			
 			if(_gameData.shipIsKilled)	
@@ -95,7 +95,8 @@ package app.controller.logic.game
 		 * If selected cell is not already selected, send message about end of the step.
 		 */		
 		private function checkUserField():void
-		{				
+		{			
+			trace("checkUserField");
 			var toSelect:Array = new Array();			
 			var userShipsPositions:Vector.<Vector.<int>> = _gameData.userBattleField;
 			
@@ -122,9 +123,9 @@ package app.controller.logic.game
 			}else if(currentCellValue == WATER_CELL || currentCellValue == EMPTY_CELL)
 			{
 				_gameData.isHited = false;
-				userShipsPositions[column][line] = KILLED_SHIP;
+				userShipsPositions[column][line] = SELECTED_CELL;
 				
-			}else if(currentCellValue == KILLED_SHIP || currentCellValue == HITED_DECK)			
+			}else if(currentCellValue == SELECTED_CELL || currentCellValue == HITED_DECK)			
 				cellAlreadySelected = true;						
 			
 			if(_gameData.shipIsKilled)	
@@ -360,7 +361,7 @@ package app.controller.logic.game
 			{
 				var singleElement:Array = arrWithPossibleNextPosition[i];
 							
-				if(vc[singleElement[0]][singleElement[1]] != HITED_DECK && vc[singleElement[0]][singleElement[1]] != KILLED_SHIP)
+				if(vc[singleElement[0]][singleElement[1]] != HITED_DECK && vc[singleElement[0]][singleElement[1]] != SELECTED_CELL)
 				{
 					res = singleElement;										
 						
@@ -612,24 +613,22 @@ package app.controller.logic.game
 			
 			res = strategyArray[randomNumber];
 			
-			if(res && res.length > 0 && _gameData.oponentBattleField[res[1]][res[0]] == 1)
+			while(vc[res[0]][res[1]] as int == SELECTED_CELL || vc[res[0]][res[1]] as int == HITED_DECK)
 			{
-				while(_gameData.oponentBattleField[res[1]][res[0]] == 1)
-				{
-					if(!res)	trace("!!!");					
+				if(!res)	trace("!!!");					
 					
-					strategyArray = getStrategyArray();				
-					randomNumber  = randomElementsFromArrayWithStrategy(strategyArray);
+				strategyArray = getStrategyArray();				
+				randomNumber  = randomElementsFromArrayWithStrategy(strategyArray);
 					
-					res = strategyArray[randomNumber];
+				res = strategyArray[randomNumber];
 					
-					if(strategyArray.length > 0)
-					{			
-						wasRemove = true;
-						strategyArray.splice(randomNumber, 1);			
-					}
-				}	
-			}			
+				if(strategyArray.length > 0)
+				{			
+					wasRemove = true;
+					strategyArray.splice(randomNumber, 1);			
+				}
+			}	
+						
 			
 			if(strategyArray.length > 0 && !wasRemove)	strategyArray.splice(randomNumber, 1);	
 			
@@ -638,7 +637,7 @@ package app.controller.logic.game
 				trace("!!!");
 			}
 			
-			return [res[1], res[0]];
+			return res;
 		}
 		
 		private function randomElementsFromArrayWithStrategy(arr:Array):int

@@ -110,7 +110,7 @@ package app.view.components.game
 		public function putShipInBattleField(column:int, line:int, orient:int, deckNumber:int, saveShipLocation:Boolean = false):void
 		{
 			var increment:Boolean, i:int, lineRanges:Array, columnRanges:Array, j:int;
-			shipPosition = new Vector.<int>;
+			shipPosition = new Vector.<int>();
 			
 			if(orient == 1)
 			{				
